@@ -1,15 +1,16 @@
 import React, { useEffect, useState } from "react";
 import { IconButton, Typography, Container } from "@material-ui/core";
-
 import { Mic } from "@material-ui/icons";
-
 import useStyles from "./styles";
+import { useDispatch } from "react-redux";
+
+import BlobActions from "~/store/ducks/blob";
 
 function Main() {
   const classes = useStyles();
   const [recording, setRecording] = useState(false);
-  const [audioChunks, setAudioChunks] = useState([]);
-  let mediaRecorder;
+  const [mediaRecorder, setMediaRecorder] = useState(null);
+  const dispatch = useDispatch();
 
   useEffect(() => {
     navigator.mediaDevices.getUserMedia({ audio: true }).then((stream) => {
@@ -17,15 +18,12 @@ function Main() {
       mediaRec.addEventListener("dataavailable", (event) => {
         onData(event.data);
       });
-      mediaRecorder = mediaRec;
+      setMediaRecorder(mediaRec);
     });
-  });
+  }, []);
 
   const onData = (chunk) => {
-    console.log("chunk of real-time data is: ", recordedBlob);
-    const newAudioChunks = audioChunks;
-    newAudioChunks.push(event.data);
-    setAudioChunks(newAudioChunks);
+    dispatch(BlobActions.sendBlobRequest(chunck));
   };
 
   const onStop = () => {
@@ -34,7 +32,7 @@ function Main() {
   };
 
   const onStart = () => {
-    mediaRecorder.start();
+    mediaRecorder.start(2000);
     setRecording(true);
   };
 
@@ -45,6 +43,17 @@ function Main() {
 
   return (
     <Container component="main" maxWidth="xs" className={classes.root}>
+      <h1
+        style={{
+          fontFamily: "Comic Sans MS",
+          color: "purple",
+          fontSize: "5em",
+          textAlign: "center",
+          verticalAlign: "top",
+        }}
+      >
+        shot.io
+      </h1>
       <div className={classes.paper}>
         <IconButton className={classes.button} onClick={() => toggleRecord()}>
           <Mic className={classes.icon} />
