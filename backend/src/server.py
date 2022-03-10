@@ -3,7 +3,8 @@ Implements a backend server
 """
 
 # Imports
-from flask import Flask
+from flask import Flask, request, jsonify
+from datetime import datetime
 
 # Server instantiation and configuration
 server = Flask(__name__)
@@ -23,7 +24,7 @@ def root() -> dict:
         "status": 200
     }
 
-@server.route("/predict")
+@server.route("/predict", methods = ['POST'])
 def predict() -> dict:
     """
     Route to predict if audio file is a gunshot.
@@ -34,5 +35,7 @@ def predict() -> dict:
             probability (float): probability of being a gunshot.
         }
     """
+    audio = request.files['audio']
+    time_str = datetime.now().strftime("%Y%m%d%H%M%S")
     
-    
+    print(audio)

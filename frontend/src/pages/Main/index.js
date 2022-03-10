@@ -23,7 +23,9 @@ function Main() {
   }, []);
 
   const onData = (chunk) => {
-    dispatch(BlobActions.sendBlobRequest(chunk));
+    dispatch(BlobActions.sendBlobRequest(
+      new Blob(chunk, {'type': 'audio/wav; codecs = MS_PCM'})
+    ));
   };
 
   const onStop = () => {
