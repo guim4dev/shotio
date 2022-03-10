@@ -3,26 +3,27 @@ Implements a backend server
 """
 
 # Imports
-from flask import Flask, request, jsonify
-from datetime import datetime
+from os import remove
+import uuid
+
+from flask import Flask, request
+from flask_cors import CORS
+
+from helpers.predictor import (
+    create_model,
+    predict_sample
+)
 
 # Server instantiation and configuration
 server = Flask(__name__)
+CORS(server)
 
-# Foo
+# Load model
+model = create_model()
+
 @server.route("/")
-def root() -> dict:
-    """
-    Root route.
-
-    Returns:
-        dict: {
-            status (int): status code.
-        }
-    """
-    return {
-        "status": 200
-    }
+def root():
+    return "Hello world!"
 
 @server.route("/predict", methods = ['POST'])
 def predict() -> dict:
@@ -35,7 +36,13 @@ def predict() -> dict:
             probability (float): probability of being a gunshot.
         }
     """
+    filename = uuid.uuid4()
     audio = request.files['audio']
-    time_str = datetime.now().strftime("%Y%m%d%H%M%S")
     
-    print(audio)
+    audio.save(f"./temp/{filename}.wav")
+
+    prediction = predict_sample(model, f"{filename}")
+
+    remove(f"./temp/{filename}.wav")
+
+    return prediction

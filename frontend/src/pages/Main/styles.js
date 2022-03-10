@@ -22,4 +22,7 @@ export default makeStyles((theme) => ({
     fontSize: 50,
     color: "white",
   },
+  alert: {
+    color: 'red',
+  }
 }));

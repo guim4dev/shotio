@@ -4,7 +4,7 @@ import Immutable from "seamless-immutable";
 
 const { Types, Creators } = createActions({
   sendBlobRequest: ["blob"],
-  sendBlobSuccess: null,
+  sendBlobSuccess: ['data'],
   sendBlobFailure: ["error"],
 });
 
@@ -16,12 +16,16 @@ export default Creators;
 export const INITIAL_STATE = Immutable({
   isLoading: false,
   error: null,
+  data: {
+    probability: 0.0,
+    result: false
+  }
 });
 
 /* Reducers */
 
 export const sendBlobReq = (state) => state.merge({ isLoading: true });
-export const sendBlobSuc = (state) => state.merge({ isLoading: false });
+export const sendBlobSuc = (state, {data}) => state.merge({ isLoading: false, data });
 export const sendBlobFail = (state, { error }) =>
   state.merge({
     isLoading: false,

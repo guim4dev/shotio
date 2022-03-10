@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { IconButton, Typography, Container } from "@material-ui/core";
 import { Mic } from "@material-ui/icons";
 import useStyles from "./styles";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 
 import BlobActions from "~/store/ducks/blob";
 
@@ -10,7 +10,9 @@ function Main() {
   const classes = useStyles();
   const [recording, setRecording] = useState(false);
   const [mediaRecorder, setMediaRecorder] = useState(null);
+  const [audioChunks, setAudioChunks] = useState([]);
   const dispatch = useDispatch();
+  const { data } = useSelector((state) => state.blob);
 
   useEffect(() => {
     navigator.mediaDevices.getUserMedia({ audio: true }).then((stream) => {
@@ -23,14 +25,21 @@ function Main() {
   }, []);
 
   const onData = (chunk) => {
-    dispatch(BlobActions.sendBlobRequest(
-      new Blob(chunk, {'type': 'audio/wav; codecs = MS_PCM'})
-    ));
+    const newAudioChunks = audioChunks
+    
+    if (newAudioChunks.length !== 0)
+      newAudioChunks[1] = chunk
+    else
+      newAudioChunks.push(chunk)
+
+    setAudioChunks(newAudioChunks)
+    dispatch(BlobActions.sendBlobRequest(new Blob([newAudioChunks[0], chunk])));
   };
 
   const onStop = () => {
     mediaRecorder.stop();
     setRecording(false);
+    setAudioChunks([])
   };
 
   const onStart = () => {
@@ -62,6 +71,12 @@ function Main() {
         </IconButton>
         <Typography component="h1" variant="h5">
           {recording ? "Gravando" : "Gravar"}
+        </Typography>
+        <Typography component="h1" variant="h5">
+          {`Probabilidade de tiro: ${(data.probability * 100).toFixed(2)}%`}
+        </Typography>
+        <Typography component="h1" variant="h5" className={classes.alert}>
+          {data.result ? 'TIRO!!!' : ''}
         </Typography>
       </div>
     </Container>

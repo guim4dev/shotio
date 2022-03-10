@@ -11,14 +11,15 @@ function* sendBlob({ blob }) {
     const form = new FormData();
     form.append("audio", blob);
 
-    const { data } = yield call(api.post, "/", form, {
+    const { data } = yield call(api.post, "predict", form, {
       headers: {
         "Content-Type": "multipart/form-data",
       },
     });
 
-    yield put(BlobActions.sendBlobSuccess());
+    yield put(BlobActions.sendBlobSuccess(data));
   } catch (error) {
+    console.log(error)
     toast.error("Erro ao enviar áudio!");
     yield put(BlobActions.sendBlobFailure(error));
   }
