@@ -23,7 +23,7 @@ function Main() {
   }, []);
 
   const onData = (chunk) => {
-    dispatch(BlobActions.sendBlobRequest(chunck));
+    dispatch(BlobActions.sendBlobRequest(chunk));
   };
 
   const onStop = () => {
